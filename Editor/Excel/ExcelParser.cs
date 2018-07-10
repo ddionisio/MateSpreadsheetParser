@@ -84,7 +84,7 @@ namespace M8.SpreadsheetParser {
         /// <summary>
         /// Deserialize all sheets
         /// </summary>
-        public Dictionary<string, List<T>> Deserializer<T>(string[] filterFieldNames) {
+        public Dictionary<string, List<T>> DeserializeAllSheets<T>(string[] filterFieldNames) {
             var convertedSheets = new Dictionary<string, List<T>>();
 
             for(int i = 0; i < sheetCount; i++) {
