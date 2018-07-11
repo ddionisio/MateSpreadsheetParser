@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using Google.GData.Client;
 using Google.GData.Spreadsheets;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace M8.SpreadsheetParser {
     public class GoogleRequest {
@@ -27,6 +25,7 @@ namespace M8.SpreadsheetParser {
                 AccessType = "offline",
                 TokenType = "refresh"
             };
+
             return new GOAuth2RequestFactory("spreadsheet", "MySpreadsheetIntegration-v1", parameters);
         }
 

@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-
+﻿
 namespace M8.SpreadsheetParser {
     [System.Serializable]
     public struct GoogleOAuth2InfoParse {
@@ -17,11 +16,6 @@ namespace M8.SpreadsheetParser {
         public string auth_provider_x509_cert_url;
         public string client_secret;
         public string[] redirect_uris;
-
-        public static GoogleOAuth2Info FromJSON(string json) {
-            var parse = JsonUtility.FromJson<GoogleOAuth2InfoParse>(json);
-            return parse.installed;
-        }
 
         public string GetRedirectURI() {
             if(redirect_uris != null && redirect_uris.Length > 0)

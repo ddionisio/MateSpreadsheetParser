@@ -239,7 +239,7 @@ namespace M8.SpreadsheetParser {
 
             if(t.IsEnum) {
                 // for enum type, first get value by string then convert it to enum.
-                value = cell.StringCellValue;
+                value = cell.StringCellValue.Trim();
                 return Enum.Parse(t, value.ToString(), true);
             }
             else if(t.IsArray) {

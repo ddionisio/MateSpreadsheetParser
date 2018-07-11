@@ -10,6 +10,10 @@ namespace M8.SpreadsheetParser {
 
         public GoogleOAuth2Info authInfo;
 
+        [Header("Account (if required)")]
+        public string username;
+        public string password;
+
         // enter Access Code after getting it from auth url
         [HideInInspector]
         public string accessCode = "";

@@ -11,25 +11,21 @@ using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 
 namespace M8.SpreadsheetParser {
-    /// <summary>
-    /// Resolve TlsException error.
-    /// </summary>
-    public class UnsafeSecurityPolicy {
+    [CustomEditor(typeof(GoogleSettings))]
+    public class GoogleSettingsInspector : Editor {
         public static bool Validator(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors policyErrors) {
             //Debug.Log("Validation successful!");
             return true;
         }
 
-        public static void Instate() {
-            ServicePointManager.ServerCertificateValidationCallback = Validator;
-        }
-    }
-
-    [CustomEditor(typeof(GoogleSettings))]
-    public class GoogleSettingsInspector : Editor {
-        public void OnEnable() {
+        void OnEnable() {
             // resolve TlsException error
-            UnsafeSecurityPolicy.Instate();
+            ServicePointManager.ServerCertificateValidationCallback += Validator;
+        }
+
+        void OnDisable() {
+            // resolve TlsException error
+            ServicePointManager.ServerCertificateValidationCallback -= Validator;
         }
 
         public override void OnInspectorGUI() {
@@ -70,7 +66,7 @@ namespace M8.SpreadsheetParser {
             if(GUILayout.Button("Refresh Data From JSON")) {
                 var json = File.ReadAllText(path);
 
-                dat.authInfo = GoogleOAuth2Info.FromJSON(json);
+                dat.authInfo = GoogleOAuth2InfoFromJSON.Parse(json);
 
                 EditorUtility.SetDirty(dat);
             }
