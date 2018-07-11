@@ -113,32 +113,27 @@ namespace M8.SpreadsheetParser {
 
             var result = new List<T>();
 
-            List<string> headerNames = new List<string>();
-
             HashSet<string> filterFieldLookup = filterFieldNames != null && filterFieldNames.Length > 0 ? new HashSet<string>(filterFieldNames) : null;
 
+            IRow headerRow = null;
             int rowIndex = 0;
+
             foreach(IRow row in sheet) {
                 if(rowIndex == 0) {
-                    //setup header names
-                    for(int i = 0; i < row.LastCellNum; i++) {
-                        string value = row.GetCell(i).StringCellValue;
-                        headerNames.Add(value);
-                    }
+                    headerRow = row;
                 }
                 else {
                     var item = (T)Activator.CreateInstance(type);
 
-                    //fill item with values from row
-                    //grab cells based on headerNames, filter with fieldLookup (if valid)
-                    for(int headerIndex = 0; headerIndex < headerNames.Count; headerIndex++) {
-                        string headerName = headerNames[headerIndex];
-
-                        if(filterFieldLookup != null && !filterFieldLookup.Contains(headerName))
+                    foreach(ICell cell in row) {
+                        //grab header name and see if it's valid
+                        var headerCell = headerRow.GetCell(cell.ColumnIndex, MissingCellPolicy.RETURN_BLANK_AS_NULL);
+                        if(headerCell == null)
                             continue;
 
-                        var cell = row.GetCell(headerIndex, MissingCellPolicy.RETURN_BLANK_AS_NULL);
-                        if(cell == null)
+                        string headerName = headerCell.StringCellValue;
+
+                        if(filterFieldLookup != null && !filterFieldLookup.Contains(headerName))
                             continue;
 
                         const BindingFlags bindFlags = BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
@@ -151,7 +146,7 @@ namespace M8.SpreadsheetParser {
                                 fieldInfo.SetValue(item, value);
                             }
                             catch(Exception e) {
-                                string pos = string.Format("Row[{0}], Cell[{1}]", (rowIndex).ToString(), headerNames[headerIndex]);
+                                string pos = string.Format("Row[{0}], Cell[{1}]", (rowIndex).ToString(), headerName);
                                 Debug.LogError(string.Format("Deserialize {0} ({1})  Exception: {2}", mFilepath, pos, e.Message));
                             }
 
@@ -169,14 +164,14 @@ namespace M8.SpreadsheetParser {
                                 propInfo.SetValue(item, value, null);
                             }
                             catch(Exception e) {
-                                string pos = string.Format("Row[{0}], Cell[{1}]", (rowIndex).ToString(), headerNames[headerIndex]);
+                                string pos = string.Format("Row[{0}], Cell[{1}]", (rowIndex).ToString(), headerName);
                                 Debug.LogError(string.Format("Deserialize {0} ({1})  Exception: {2}", mFilepath, pos, e.Message));
                             }
 
                             continue;
                         }
                     }
-
+                    
                     result.Add(item);
                 }
 
